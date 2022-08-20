@@ -1,130 +1,87 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br />
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener"
-        >vue-cli documentation</a
-      >.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel"
-          target="_blank"
-          rel="noopener"
-          >babel</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router"
-          target="_blank"
-          rel="noopener"
-          >router</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex"
-          target="_blank"
-          rel="noopener"
-          >vuex</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint"
-          target="_blank"
-          rel="noopener"
-          >eslint</a
-        >
-      </li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li>
-        <a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a>
-      </li>
-      <li>
-        <a href="https://forum.vuejs.org" target="_blank" rel="noopener"
-          >Forum</a
-        >
-      </li>
-      <li>
-        <a href="https://chat.vuejs.org" target="_blank" rel="noopener"
-          >Community Chat</a
-        >
-      </li>
-      <li>
-        <a href="https://twitter.com/vuejs" target="_blank" rel="noopener"
-          >Twitter</a
-        >
-      </li>
-      <li>
-        <a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a>
-      </li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li>
-        <a href="https://router.vuejs.org" target="_blank" rel="noopener"
-          >vue-router</a
-        >
-      </li>
-      <li>
-        <a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-devtools#vue-devtools"
-          target="_blank"
-          rel="noopener"
-          >vue-devtools</a
-        >
-      </li>
-      <li>
-        <a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener"
-          >vue-loader</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-          rel="noopener"
-          >awesome-vue</a
-        >
-      </li>
-    </ul>
+  <div>
+    <v-container>
+      <v-text-field v-model="rowCnt" label="Items in a row"></v-text-field
+      ><v-btn @click="save">Save</v-btn>
+      <h2 class="error" v-if="saved">
+        Saved, refresh page please to get new values
+      </h2>
+    </v-container>
+    <v-container> Set scale to: {{ scale }} </v-container>
+    <v-container class="grey lighten-5 mb-6" v-if="items.length > 0">
+      <v-row :align="'start'" no-gutters v-for="i in rowCnt" :key="i">
+        <v-col v-for="j in rowCnt" :key="j">
+          <v-card class="pa-2" outlined tile>
+            {{ items[rowCnt * (i - 1) + (j - 1)].x }} /
+            {{ items[rowCnt * (i - 1) + (j - 1)].y }}
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
 <script>
 export default {
-  name: "HelloWorld",
-  props: {
-    msg: String
+  data() {
+    return {
+      rowCnt: 3,
+      resolutionX: 1920,
+      resolutionY: 1080,
+      saved: false
+    };
+  },
+  computed: {
+    colCnt: function() {
+      return this.rowCnt;
+    },
+    scale: function() {
+      return 100 / this.rowCnt;
+    },
+    frameSizeX: function() {
+      return this.resolutionX / this.rowCnt;
+    },
+    frameSizeY: function() {
+      return this.resolutionY / this.rowCnt;
+    },
+    initialOffsetX: function() {
+      return this.frameSizeX / 2;
+    },
+    initialOffsetY: function() {
+      return this.frameSizeY / 2;
+    },
+    items: function() {
+      let localItems = [];
+      for (var col = 0; col < this.rowCnt; col++) {
+        let rows = [];
+        for (var row = 0; row < this.rowCnt; row++) {
+          let xPos = this.positionX(row);
+          let yPos = this.positionY(col);
+          let item = { x: xPos, y: yPos };
+          rows.push(item);
+        }
+        localItems.push(...rows);
+      }
+      return localItems;
+    }
+  },
+  methods: {
+    positionX: function(rowIndex) {
+      return this.initialOffsetX + this.frameSizeX * rowIndex;
+    },
+    positionY: function(colIndex) {
+      return this.initialOffsetY + this.frameSizeY * colIndex;
+    },
+    save: function() {
+      localStorage.setItem("calc-row-cnt", this.rowCnt);
+      this.saved = true;
+    }
+  },
+  mounted: function() {
+    let fromStorage = parseInt(localStorage.getItem("calc-row-cnt"));
+    this.rowCnt = fromStorage;
   }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
+<style lang="scss" scoped></style>
