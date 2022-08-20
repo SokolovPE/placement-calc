@@ -78,7 +78,7 @@ export default {
     }
   },
   mounted: function() {
-    let fromStorage = parseInt(localStorage.getItem("calc-row-cnt"));
+    let fromStorage = parseInt(localStorage.getItem("calc-row-cnt")) || 5;
     this.rowCnt = fromStorage;
   }
 };
