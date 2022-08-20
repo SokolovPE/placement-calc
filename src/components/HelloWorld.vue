@@ -1,8 +1,25 @@
 <template>
   <div>
-    <v-container>
-      <v-text-field v-model="rowCnt" label="Items in a row"></v-text-field
+    <v-container class="input-container">
+      <v-text-field
+        class="shrink-ti"
+        v-model="resolutionX"
+        label="ResolutionX"
+      ></v-text-field>
+      <v-text-field
+        class="shrink-ti"
+        v-model="resolutionY"
+        label="ResolutionY"
+      ></v-text-field>
+      <v-text-field
+        class="shrink-ti"
+        v-model="rowCnt"
+        label="Items in a row"
+      ></v-text-field
       ><v-btn @click="save">Save</v-btn>
+    </v-container>
+
+    <v-container>
       <h2 class="error" v-if="saved">
         Saved, refresh page please to get new values
       </h2>
@@ -74,14 +91,32 @@ export default {
     },
     save: function() {
       localStorage.setItem("calc-row-cnt", this.rowCnt);
+      localStorage.setItem("calc-resx", this.resolutionX);
+      localStorage.setItem("calc-resy", this.resolutionY);
       this.saved = true;
     }
   },
   mounted: function() {
-    let fromStorage = parseInt(localStorage.getItem("calc-row-cnt")) || 5;
-    this.rowCnt = fromStorage;
+    let rowsFromStorage = parseInt(localStorage.getItem("calc-row-cnt")) || 5;
+    this.rowCnt = rowsFromStorage;
+    let resolutionXFromStorage =
+      parseInt(localStorage.getItem("calc-resx")) || 1920;
+    this.resolutionX = resolutionXFromStorage;
+    let resolutionYFromStorage =
+      parseInt(localStorage.getItem("calc-resy")) || 1080;
+    this.resolutionY = resolutionYFromStorage;
   }
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.input-container {
+  display: flex;
+  flex-wrap: wrap;
+
+  .shrink-ti {
+    max-width: 100px;
+    width: 100px;
+  }
+}
+</style>
