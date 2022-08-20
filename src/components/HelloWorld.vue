@@ -74,7 +74,10 @@ export default {
         for (var row = 0; row < this.rowCnt; row++) {
           let xPos = this.positionX(row);
           let yPos = this.positionY(col);
-          let item = { x: xPos, y: yPos };
+          let item = {
+            x: Math.floor(xPos) == xPos ? Math.floor(xPos) : xPos,
+            y: Math.floor(yPos) == yPos ? Math.floor(yPos) : yPos
+          };
           rows.push(item);
         }
         localItems.push(...rows);
@@ -84,10 +87,10 @@ export default {
   },
   methods: {
     positionX: function(rowIndex) {
-      return this.initialOffsetX + this.frameSizeX * rowIndex;
+      return (this.initialOffsetX + this.frameSizeX * rowIndex).toFixed(2);
     },
     positionY: function(colIndex) {
-      return this.initialOffsetY + this.frameSizeY * colIndex;
+      return (this.initialOffsetY + this.frameSizeY * colIndex).toFixed(2);
     },
     save: function() {
       localStorage.setItem("calc-row-cnt", this.rowCnt);
